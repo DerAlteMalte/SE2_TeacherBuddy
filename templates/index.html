@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Project — Home</title>
+    <meta name="description" content="Short description of the project">
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <nav aria-label="Main navigation" class="nav container">
+            <a href="/" class="brand">Project</a>
+            <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+            <ul id="nav-menu" class="nav-list" hidden>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main" class="container">
+        <section class="hero">
+            <h1>Welcome</h1>
+            <p>Starter HTML boilerplate. Replace this with your content.</p>
+            <a href="#" class="btn">Get started</a>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <small>&copy; <span id="year"></span> Project. All rights reserved.</small>
+        </div>
+    </footer>
+
+    <script>
+        // Simple UI helpers
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        const navToggle = document.querySelector('.nav-toggle');
+        navToggle?.addEventListener('click', () => {
+            const menu = document.getElementById('nav-menu');
+            const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+            navToggle.setAttribute('aria-expanded', String(!expanded));
+            if (menu) menu.hidden = expanded;
+        });
+    </script>
+</body>
+</html></html>
