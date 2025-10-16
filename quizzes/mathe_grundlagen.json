@@ -1,0 +1,23 @@
+{
+    "title": "Mathematik Grundlagen",
+    "questions": [
+      {
+        "id": 1,
+        "type": "fill-in-the-blank",
+        "text": "Zwei plus zwei ist gleich ____.",
+        "answer": "vier"
+      },
+      {
+        "id": 2,
+        "type": "fill-in-the-blank",
+        "text": "Die Zahl Pi beginnt mit 3,____.",
+        "answer": "14"
+      },
+      {
+        "id": 3,
+        "type": "fill-in-the-blank",
+        "text": "10 geteilt durch 2 ist ____.",
+        "answer": "fünf"
+      }
+    ]
+}
