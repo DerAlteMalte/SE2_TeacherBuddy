@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Registrierung für Lehrer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">Lehrer-Registrierung</h2>
+                <p class="text-center text-muted">Diese Registrierung erstellt einen Lehrer-Account.</p>
+                <form method="POST" action="{{ url_for('register') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Benutzername</label>
+                        <input type="text" class="form-control" id="username" name="username" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Passwort</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Registrieren</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

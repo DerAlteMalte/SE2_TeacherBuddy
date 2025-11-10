@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}Rangliste{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                {% if group_name %}
+                    <h2 class="card-title text-center mb-4">Rangliste: {{ group_name }} 🏆</h2>
+                    <ol class="list-group list-group-numbered">
+                        {% for student in students_ranked %}
+                        <li class="list-group-item d-flex justify-content-between align-items-start fs-5
+                                   {% if student.id == current_user.id %} active {% endif %}">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold">{{ student.username }}</div>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                        </li>
+                        {% endfor %}
+                    </ol>
+                {% else %}
+                    <h2 class="card-title text-center mb-4">Keine Rangliste</h2>
+                    <p class="text-center text-muted">Du musst von deinem Lehrer einer Gruppe zugewiesen werden, um eine Rangliste zu sehen.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

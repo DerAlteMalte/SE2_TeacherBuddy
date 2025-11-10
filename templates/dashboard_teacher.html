@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block title %}Lehrer-Dashboard{% endblock %}
+
+{% block content %}
+<h2>Lehrer-Dashboard ({{ current_user.username }})</h2>
+<hr>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h4>Gruppe erstellen</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('create_group') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="group_name" class="form-label">Gruppenname</label>
+                        <input type="text" class="form-control" id="group_name" name="group_name" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Erstellen</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4>Schüler-Account erstellen</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('create_student') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Benutzername</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Initial-Passwort</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="group_id" class="form-label">Gruppe zuweisen (optional)</label>
+                        <select class="form-select" id="group_id" name="group_id">
+                            <option value="">Keine Gruppe</option>
+                            {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Schüler erstellen</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h3>Schüler-Übersicht</h3>
+        {% if not groups and not students_no_group %}
+            <p class="text-muted">Du hast noch keine Gruppen oder Schüler erstellt.</p>
+        {% endif %}
+
+        {% for group in groups %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5>Gruppe: {{ group.name }}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% if not group.students %}
+                    <li class="list-group-item text-muted">Diese Gruppe hat noch keine Schüler.</li>
+                {% endif %}
+                {% for student in group.students %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ student.username }}
+                    <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+
+        {% if students_no_group %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-header bg-light">
+                <h5>Schüler ohne Gruppe</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for student in students_no_group %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ student.username }}
+                    <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

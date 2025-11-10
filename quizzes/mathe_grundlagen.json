@@ -5,7 +5,7 @@
         "id": 1,
         "type": "fill-in-the-blank",
         "text": "Zwei plus zwei ist gleich ____.",
-        "answer": "vier"
+        "answer": "4"
       },
       {
         "id": 2,
@@ -17,7 +17,7 @@
         "id": 3,
         "type": "fill-in-the-blank",
         "text": "10 geteilt durch 2 ist ____.",
-        "answer": "fünf"
+        "answer": "5"
       }
     ]
 }

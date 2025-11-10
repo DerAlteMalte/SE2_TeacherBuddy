@@ -1,22 +1,16 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz beendet</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <style>
-        body { display: flex; align-items: center; justify-content: center; height: 100vh; background-color: #f8f9fa; }
-        .container { text-align: center; }
-    </style>
-</head>
-<body>
-    <div class="container" id="popup">
-        <div class="card p-4 shadow-lg">
-            <h2 class="mb-3">Glückwunsch!</h2>
-            <p>Du hast das Quiz "{{ quiz_title }}" abgeschlossen.</p>
-            <a href="{{ url_for('home') }}" class="btn btn-primary mt-3">Zurück zur Startseite</a>
+{% extends "layout.html" %}
+{% block title %}Quiz beendet{% endblock %}
+
+{% block content %}
+<div class="container text-center" id="popup">
+    <div class="card p-4 shadow-lg" style="max-width: 500px; margin: auto;">
+        <h2 class="mb-3">🎉 Glückwunsch! 🎉</h2>
+        <p class="lead">Du hast das Quiz "{{ quiz_title }}" abgeschlossen.</p>
+        <p class="fs-4">Du hast <strong class="text-success">{{ exp_earned }} EXP</strong> verdient!</p>
+        <div class="mt-3">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Zurück zum Dashboard</a>
+            <a href="{{ url_for('leaderboard') }}" class="btn btn-info">Zur Rangliste</a>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}Schüler-Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Hallo, {{ current_user.username }}!</h2>
+    <span class="badge bg-primary p-3 fs-5">🌟 {{ current_user.exp }} EXP</span>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header">
+        <h3>Deine Lern-Journey</h3>
+    </div>
+    <div class="card-body">
+        {% if not all_quizzes %}
+            <p class="text-muted">Es sind noch keine Quizzes verfügbar.</p>
+        {% else %}
+        <ul class="list-group">
+            {% for quiz in all_quizzes %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">{{ quiz.title }}</h5>
+                        {% if quiz.name in completed_quizzes %}
+                            <span class="text-success">✔ Abgeschlossen</span>
+                        {% else %}
+                            <span class="text-muted">Noch nicht bearbeitet</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('start_quiz', quiz_name=quiz.name) }}" class="btn btn-primary">
+                        {% if quiz.name in completed_quizzes %}Nochmal üben{% else %}Starten{% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
