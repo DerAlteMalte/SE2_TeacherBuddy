@@ -5,21 +5,48 @@
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="quiz-card" style="padding: 2rem; border-radius: 15px; background-color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <p class="text-muted">Frage {{ question_index + 1 }} von {{ total_questions }}</p>
+            
+            <p class="text-muted">
+                Frage {{ question_index + 1 }} von {{ total_questions }}
+            </p>
+
             <div class="progress mb-4" style="height: 10px;">
-                <div class="progress-bar" role="progressbar" style="width: {{ (((question_index + 1) / total_questions) * 100)|round(0) }}%;" aria-valuenow="{{ question_index + 1 }}" aria-valuemin="0" aria-valuemax="{{ total_questions }}"></div>
+                <div class="progress-bar" role="progressbar"
+                     style="width: {{ (((question_index + 1) / total_questions) * 100)|round(0) }}%;"
+                     aria-valuenow="{{ question_index + 1 }}" aria-valuemin="0" aria-valuemax="{{ total_questions }}">
+                </div>
             </div>
 
-            <p class="question-text" style="font-size: 1.5rem; margin-bottom: 1.5rem;">
-                {{ question.text.split('____')[0] }}<span class="text-primary">____</span>{{ question.text.split('____')[1] }}
-            </p>
-            
-            <form method="post">
-                <div class="mb-3">
-                    <input type="text" name="answer" class="form-control" placeholder="Deine Antwort" style="text-align: center; font-size: 1.2rem;" required autofocus>
-                </div>
-                <button type="submit" class="btn btn-success w-100">Antworten</button>
-            </form>
+            {% if question.type == "multiple-choice" %}
+                <p class="question-text" style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                    {{ question.text }}
+                </p>
+
+                <form method="post">
+                    {% for option in question.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="answer" id="opt{{ loop.index }}" value="{{ option }}" required>
+                            <label class="form-check-label" for="opt{{ loop.index }}">
+                                {{ option }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success w-100 mt-3">Antworten</button>
+                </form>
+
+            {% else %}
+                <p class="question-text" style="font-size: 1.5rem; margin-bottom: 1.5rem;">
+                    {{ question.text.split('____')[0] }}<span class="text-primary">____</span>{{ question.text.split('____')[1] }}
+                </p>
+
+                <form method="post">
+                    <div class="mb-3">
+                        <input type="text" name="answer" class="form-control" placeholder="Deine Antwort"
+                               style="text-align: center; font-size: 1.2rem;" required autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Antworten</button>
+                </form>
+            {% endif %}
         </div>
     </div>
 </div>

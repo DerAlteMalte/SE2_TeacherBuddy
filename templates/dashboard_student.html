@@ -26,9 +26,16 @@
                             <span class="text-muted">Noch nicht bearbeitet</span>
                         {% endif %}
                     </div>
-                    <a href="{{ url_for('start_quiz', quiz_name=quiz.name) }}" class="btn btn-primary">
-                        {% if quiz.name in completed_quizzes %}Nochmal üben{% else %}Starten{% endif %}
-                    </a>
+                    <div class="d-flex gap-2">
+                        {% if quiz.name in completed_quizzes %}
+                            <a href="{{ url_for('quiz_finished', quiz_name=quiz.name) }}" class="btn btn-outline-secondary">
+                                Details anzeigen
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('start_quiz', quiz_name=quiz.name) }}" class="btn btn-primary">
+                            {% if quiz.name in completed_quizzes %}Nochmal üben{% else %}Starten{% endif %}
+                        </a>
+                    </div>
                 </li>
             {% endfor %}
         </ul>

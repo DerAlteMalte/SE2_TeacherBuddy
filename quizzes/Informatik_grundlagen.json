@@ -1,0 +1,37 @@
+{
+  "title": "Informatik Grundlagen",
+  "questions": [
+    {
+      "id": 1,
+      "type": "fill-in-the-blank",
+      "text": "Die zentrale Recheneinheit eines Computers heißt ________________.",
+      "answer": "CPU"
+    },
+    {
+      "id": 2,
+      "type": "multiple-choice",
+      "text": "Welche dieser Komponenten ist ein Eingabegerät?",
+      "options": ["Monitor", "Maus", "Drucker", "Lautsprecher"],
+      "answer": "Maus"
+    },
+    {
+      "id": 3,
+      "type": "fill-in-the-blank",
+      "text": "Das Binärsystem besteht nur aus den Zahlen ____ und ____.",
+      "answer": "0 und 1"
+    },
+    {
+      "id": 4,
+      "type": "multiple-choice",
+      "text": "Wie viele Bit hat ein Byte?",
+      "options": ["4", "8", "10", "16"],
+      "answer": "8"
+    },
+    {
+      "id": 5,
+      "type": "fill-in-the-blank",
+      "text": "Der Begriff „Software“ bezeichnet ________________, während „Hardware“ die physischen Komponenten meint.",
+      "answer": "Programme"
+    }
+  ]
+}
