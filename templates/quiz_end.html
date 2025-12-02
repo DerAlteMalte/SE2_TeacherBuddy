@@ -1,12 +1,42 @@
+quiz end:
+
 {% extends "layout.html" %}
 {% block title %}Quiz beendet{% endblock %}
+
 {% block content %}
 
 <div class="container mt-5">
   <div class="card shadow-sm p-4 text-center">
-    <h2 class="mb-3">🎉 Glückwunsch, {{ current_user.username }}! 🎉</h2>
-    <p>Du hast das Quiz <strong>"{{ quiz_title }}"</strong> abgeschlossen.</p>
-    <p class="fs-4">Du hast <strong class="text-success">{{ exp_earned }} EXP</strong> verdient!</p>
+
+  {# ------------------ EXP-Fallunterscheidung ------------------ #}
+
+  {% if exp_earned == 0 %}
+      <h2 class="mb-3">😕 Schade, {{ current_user.username }}...</h2>
+      <p>Du hast leider <strong>keine EXP</strong> verdient.</p>
+      <p class="text-muted">Versuch es nächstes mal besser – du packst das!</p>
+
+  {% elif exp_earned <= 5 %}
+      <h2 class="mb-3">👍 Gut gemacht, {{ current_user.username }}!</h2>
+      <p>Ein Anfang ist gemacht: <strong>{{ exp_earned }} EXP</strong>.</p>
+      <p>Bleib dran, da geht mehr!</p>
+
+  {% elif exp_earned <= 15 %}
+      <h2 class="mb-3">🎯 Sauber, {{ current_user.username }}!</h2>
+      <p>Du hast solide <strong>{{ exp_earned }} EXP</strong> geholt.</p>
+      <p>Das zeigt: Du gibst Gas!</p>
+
+  {% elif exp_earned <= 25 %}
+      <h2 class="mb-3">🔥 Stark, {{ current_user.username }}!</h2>
+      <p>Du hast beeindruckende <strong>{{ exp_earned }} EXP</strong> gesammelt.</p>
+      <p>Richtig gute Leistung!</p>
+
+  {% else %}
+      <h2 class="mb-3">🏆 WOW, {{ current_user.username }}! 🏆</h2>
+      <p>Du hast unglaubliche <strong>{{ exp_earned }} EXP</strong> erreicht!</p>
+      <p>Das ist absolute Spitze – weiter so!</p>
+  {% endif %}
+
+  {# ------------------------------------------------------------ #}
 
     <div class="mt-4 d-flex justify-content-center gap-3">
       <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Zurück zum Dashboard</a>
@@ -39,6 +69,7 @@
     </ul>
   </div>
   {% endif %}
+
 </div>
 
 {% endblock %}
