@@ -2,6 +2,39 @@
 {% block title %}Schüler-Dashboard{% endblock %}
 
 {% block content %}
+
+{% if daily_bonus %}
+<div id="login-popup" class="daily-popup">
+    <h2>🎉Glückwunsch! Das ist dein 10. Login in Folge 🎉</h2>
+    <p>Du hast <strong>{{ daily_bonus }} XP</strong> erhalten!</p>
+    <button onclick="document.getElementById('login-popup').style.display='none'">Cool!</button>
+</div>
+
+<style>
+  .daily-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 20px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    z-index: 9999;
+  }
+  .daily-popup button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+  }
+</style>
+{% endif %}
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Hallo, {{ current_user.username }}!</h2>
     <span class="badge bg-primary p-3 fs-5">🌟 {{ current_user.exp }} EXP</span>
@@ -42,4 +75,5 @@
         {% endif %}
     </div>
 </div>
+
 {% endblock %}

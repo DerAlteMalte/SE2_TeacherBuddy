@@ -112,6 +112,7 @@ def login():
         
         if user and user.check_password(password):
             login_user(user)
+            session['daily_bonus_shown'] = False
             return redirect(url_for('dashboard'))
         else:
             flash('Ungültiger Benutzername oder Passwort.', 'danger')
@@ -160,9 +161,20 @@ def dashboard():
         all_quizzes = get_all_quizzes()
         progress = QuizProgress.query.filter_by(user_id=current_user.id).all()
         completed_quizzes = {p.quiz_name for p in progress if p.completed}
-        return render_template('dashboard_student.html', 
-                               all_quizzes=all_quizzes, 
-                               completed_quizzes=completed_quizzes)
+
+        # --- Login Bonus (nur einmal pro Session) ---
+        daily_bonus = None
+        if not session.get('daily_bonus_shown'):
+            daily_bonus = 5
+            current_user.exp += daily_bonus
+            db.session.commit()
+            session['daily_bonus_shown'] = True
+
+        return render_template('dashboard_student.html',
+                               all_quizzes=all_quizzes,
+                               completed_quizzes=completed_quizzes,
+                               daily_bonus=daily_bonus)   # <--- wichtig!
+
 
 
 @app.route('/leaderboard')
