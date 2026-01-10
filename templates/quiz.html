@@ -9,7 +9,7 @@
             <p class="text-muted">
                 Frage {{ question_index + 1 }} von {{ total_questions }}
             </p>
-
+            
             <div class="progress mb-4" style="height: 10px;">
                 <div class="progress-bar" role="progressbar"
                      style="width: {{ (((question_index + 1) / total_questions) * 100)|round(0) }}%;"
@@ -50,4 +50,22 @@
         </div>
     </div>
 </div>
+<script>
+    // Load sound files
+    const correctSound = new Audio("{{ url_for('static', filename='sounds/correct.mp3') }}");
+    const wrongSound   = new Audio("{{ url_for('static', filename='sounds/wrong.mp3') }}");
+
+    // Find all flash alerts on the page
+    const alerts = document.querySelectorAll(".alert");
+
+    alerts.forEach(alert => {
+        if (alert.classList.contains("alert-success")) {
+            correctSound.play();
+        }
+        if (alert.classList.contains("alert-danger")) {
+            wrongSound.play();
+        }
+    });
+</script>
+
 {% endblock %}

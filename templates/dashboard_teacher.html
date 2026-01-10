@@ -7,6 +7,7 @@
 
 <div class="row">
     <div class="col-md-4">
+        
         <div class="card shadow-sm mb-4">
             <div class="card-header">
                 <h4>Gruppe erstellen</h4>
@@ -62,14 +63,35 @@
             <div class="card-header bg-light">
                 <h5>Gruppe: {{ group.name }}</h5>
             </div>
+
             <ul class="list-group list-group-flush">
                 {% if not group.students %}
                     <li class="list-group-item text-muted">Diese Gruppe hat noch keine Schüler.</li>
                 {% endif %}
+
                 {% for student in group.students %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ student.username }}
-                    <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                <li class="list-group-item">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ student.username }}</strong>
+                        <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('change_student_group') }}" class="d-flex mt-2">
+                        <input type="hidden" name="student_id" value="{{ student.id }}">
+
+                        <select name="new_group_id" class="form-select me-2">
+                            {% for g in groups %}
+                                <option value="{{ g.id }}"
+                                    {% if student.group_id == g.id %} selected {% endif %}>
+                                    {{ g.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit" class="btn btn-primary btn-sm">Ändern</button>
+                    </form>
+
                 </li>
                 {% endfor %}
             </ul>
@@ -83,9 +105,25 @@
             </div>
             <ul class="list-group list-group-flush">
                 {% for student in students_no_group %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ student.username }}
-                    <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                <li class="list-group-item">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong>{{ student.username }}</strong>
+                        <span class="badge bg-primary rounded-pill">{{ student.exp }} EXP</span>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('change_student_group') }}" class="d-flex mt-2">
+                        <input type="hidden" name="student_id" value="{{ student.id }}">
+
+                        <select name="new_group_id" class="form-select me-2">
+                            {% for g in groups %}
+                                <option value="{{ g.id }}">{{ g.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <button type="submit" class="btn btn-secondary btn-sm">Zuweisen</button>
+                    </form>
+
                 </li>
                 {% endfor %}
             </ul>

@@ -35,9 +35,25 @@
 </style>
 {% endif %}
 
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Hallo, {{ current_user.username }}!</h2>
     <span class="badge bg-primary p-3 fs-5">🌟 {{ current_user.exp }} EXP</span>
+    {% if xp_delta is not none and xp_target_name %}
+        {% if ahead %}
+            <div class="alert alert-success mt-3">
+                🏆 Du führst mit <strong>{{ xp_delta }}</strong> XP vor <strong>{{ xp_target_name }}</strong>!
+            </div>
+        {% else %}
+            <div class="alert alert-warning mt-3">
+                🔥 Du bist <strong>{{ xp_delta }}</strong> XP hinter <strong>{{ xp_target_name }}</strong>.
+            </div>
+        {% endif %}
+    {% elif ahead and xp_delta == 0 %}
+        <div class="alert alert-info mt-3">
+            👑 Du bist aktuell auf Platz 1 in deiner Gruppe!
+        </div>
+    {% endif %}
 </div>
 
 <div class="card shadow-sm">
@@ -55,19 +71,32 @@
                         <h5 class="mb-1">{{ quiz.title }}</h5>
                         {% if quiz.name in completed_quizzes %}
                             <span class="text-success">✔ Abgeschlossen</span>
+                            <br>
+                            <span class="text-muted">
+                                ⭐ {{ earned_xp[quiz.name] }} / {{ quiz.max_xp }} XP
+                            </span>
                         {% else %}
                             <span class="text-muted">Noch nicht bearbeitet</span>
+                            <br>
+                            <span class="text-muted">⭐ Max XP: {{ quiz.max_xp }}</span>
                         {% endif %}
                     </div>
                     <div class="d-flex gap-2">
                         {% if quiz.name in completed_quizzes %}
-                            <a href="{{ url_for('quiz_finished', quiz_name=quiz.name) }}" class="btn btn-outline-secondary">
+                            <a href="{{ url_for('quiz_finished', quiz_name=quiz.name) }}" 
+                            class="btn btn-outline-secondary">
                                 Details anzeigen
                             </a>
-                        {% endif %}
-                        <a href="{{ url_for('start_quiz', quiz_name=quiz.name) }}" class="btn btn-primary">
-                            {% if quiz.name in completed_quizzes %}Nochmal üben{% else %}Starten{% endif %}
-                        </a>
+                            <a href="{{ url_for('start_quiz', quiz_name=quiz.name, practice=1) }}" 
+                            class="btn btn-primary">
+                                Nochmal üben
+                            </a>
+                        {% else %}
+                                <a href="{{ url_for('start_quiz', quiz_name=quiz.name) }}" 
+                                class="btn btn-success">
+                                    Starten
+                                </a>
+                            {% endif %}
                     </div>
                 </li>
             {% endfor %}
@@ -75,5 +104,66 @@
         {% endif %}
     </div>
 </div>
+{% if mini_leaderboard %}
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h4>🏆 Mini-Leaderboard</h4>
+    </div>
+    <ul class="list-group list-group-flush">
+        {% for item in mini_leaderboard %}
+        <li class="list-group-item d-flex justify-content-between
+            {% if current_user.nemesis and item.id == current_user.nemesis.id %}
+                list-group-item-warning
+            {% endif %}
+        ">
+            <span>
+                {% if item.id == current_user.id %}
+                    <strong>Du</strong>
+                {% elif current_user.nemesis and item.id == current_user.nemesis.id %}
+                    🔥 <strong>{{ item.name }}</strong>
+                {% else %}
+                    {{ item.name }}
+                {% endif %}
+            </span>
+            <span>{{ item.exp }} XP</span>
+        </li>
+        {% endfor %}
+    </ul>
 
+    {% if my_position %}
+    <div class="card-footer text-muted">
+        Deine Position: <strong>#{{ my_position }}</strong>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h5>🔥 Dein Nemesis</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" action="{{ url_for('set_nemesis') }}">
+            <div class="mb-2">
+                <select name="nemesis_id" class="form-select">
+                    <option value="">-- Kein Nemesis --</option>
+                    {% for student in group_students %}
+                        {% if student.id != current_user.id %}
+                            <option value="{{ student.id }}"
+                                {% if current_user.nemesis and student.id == current_user.nemesis.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ student.username }} ({{ student.exp }} XP)
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-danger w-100">
+                Nemesis setzen
+            </button>
+        </form>
+    </div>
+</div>
 {% endblock %}

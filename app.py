@@ -27,6 +27,12 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(120), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='student')
     exp = db.Column(db.Integer, default=0)
+    nemesis_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    nemesis = db.relationship(
+        'User',
+        foreign_keys=[nemesis_id],
+        remote_side=[id]
+    )
     
     # Relationen für Schüler
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'), nullable=True)
@@ -85,9 +91,11 @@ def get_all_quizzes():
             quiz_name = filename.split('.')[0]
             quiz_data = load_quiz(quiz_name)
             if quiz_data:
+                num_questions = len(quiz_data.get("questions", []))
                 quizzes.append({
                     'name': quiz_name,
-                    'title': quiz_data.get('title', 'Unbenanntes Quiz')
+                    'title': quiz_data.get('title', 'Unbenanntes Quiz'),
+                    'max_xp': num_questions * EXP_PER_QUESTION
                 })
     return quizzes
 
@@ -140,6 +148,35 @@ def register():
         return redirect(url_for('login'))
         
     return render_template('register.html')
+@app.route('/set_nemesis', methods=['POST'])
+@login_required
+def set_nemesis():
+    if current_user.role != 'student':
+        abort(403)
+
+    nemesis_id = request.form.get('nemesis_id')
+
+    if not nemesis_id:
+        current_user.nemesis_id = None
+        db.session.commit()
+        flash("Nemesis entfernt.", "info")
+        return redirect(url_for('dashboard'))
+
+    nemesis = User.query.filter_by(
+        id=nemesis_id,
+        group_id=current_user.group_id,
+        role='student'
+    ).first()
+
+    if not nemesis or nemesis.id == current_user.id:
+        flash("Ungültiger Nemesis.", "danger")
+        return redirect(url_for('dashboard'))
+
+    current_user.nemesis_id = nemesis.id
+    db.session.commit()
+
+    flash(f"🔥 {nemesis.username} ist jetzt dein Nemesis!", "success")
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 @login_required
@@ -162,7 +199,7 @@ def dashboard():
         progress = QuizProgress.query.filter_by(user_id=current_user.id).all()
         completed_quizzes = {p.quiz_name for p in progress if p.completed}
 
-        # --- Login Bonus (nur einmal pro Session) ---
+
         daily_bonus = None
         if not session.get('daily_bonus_shown'):
             daily_bonus = 5
@@ -170,10 +207,77 @@ def dashboard():
             db.session.commit()
             session['daily_bonus_shown'] = True
 
-        return render_template('dashboard_student.html',
-                               all_quizzes=all_quizzes,
-                               completed_quizzes=completed_quizzes,
-                               daily_bonus=daily_bonus)   # <--- wichtig!
+
+        earned_xp = {p.quiz_name: p.exp_earned for p in progress}
+
+
+        xp_delta = None
+        xp_target_name = None
+        ahead = False
+
+        if current_user.nemesis:
+            xp_target_name = current_user.nemesis.username
+            xp_delta = abs(current_user.exp - current_user.nemesis.exp)
+            ahead = current_user.exp >= current_user.nemesis.exp
+
+
+        group_students = []
+        group = current_user.group
+        if group:
+            group_students = User.query.filter_by(
+                group_id=group.id,
+                role='student'
+            ).all()
+
+
+        mini_leaderboard = []
+        my_position = None
+
+        if group:
+            students = User.query.filter_by(
+                group_id=group.id,
+                role='student'
+            ).order_by(User.exp.desc()).all()
+
+            my_index = None
+            for idx, s in enumerate(students):
+                if s.id == current_user.id:
+                    my_index = idx
+                    my_position = idx + 1  # 1-based
+                    break
+
+            if my_index is not None:
+                wanted_ids = {current_user.id}
+
+                if my_index - 1 >= 0:
+                    wanted_ids.add(students[my_index - 1].id)  # above
+                if my_index + 1 < len(students):
+                    wanted_ids.add(students[my_index + 1].id)  # below
+
+                if current_user.nemesis:
+                    wanted_ids.add(current_user.nemesis.id)
+
+                mini_leaderboard = [
+                    {'id': s.id, 'name': s.username, 'exp': s.exp}
+                    for s in students
+                    if s.id in wanted_ids
+                ]
+
+
+
+        return render_template(
+            'dashboard_student.html',
+            all_quizzes=all_quizzes,
+            completed_quizzes=completed_quizzes,
+            earned_xp=earned_xp,
+            daily_bonus=daily_bonus,
+            xp_delta=xp_delta,
+            xp_target_name=xp_target_name,
+            ahead=ahead,
+            mini_leaderboard=mini_leaderboard,
+            my_position=my_position,
+            group_students=group_students
+        )
 
 
 
@@ -249,11 +353,15 @@ def start_quiz(quiz_name):
         progress = QuizProgress(user_id=current_user.id, quiz_name=quiz_name)
         db.session.add(progress)
         db.session.commit()
-    if progress.completed:
+    practice_mode = request.args.get("practice") == "1"
+    if progress.completed and not practice_mode:
         flash('Du hast dieses Quiz bereits abgeschlossen.', 'info')
         return redirect(url_for('quiz_finished', quiz_name=quiz_name))
     session['quiz_answers'] = []
-    return redirect(url_for('show_question', quiz_name=quiz_name, question_index=0))
+    return redirect(url_for('show_question', 
+                        quiz_name=quiz_name, 
+                        question_index=0, 
+                        practice=1 if practice_mode else None))
 
 
 @app.route('/quiz/<quiz_name>/<int:question_index>', methods=['GET', 'POST'])
@@ -261,25 +369,42 @@ def start_quiz(quiz_name):
 def show_question(quiz_name, question_index):
     if current_user.role != 'student':
         abort(403)
+
     quiz_data = load_quiz(quiz_name)
     if not quiz_data:
         abort(404, "Quiz nicht gefunden!")
+
     questions = quiz_data.get("questions", [])
+    practice_mode = request.args.get("practice") == "1"  # <-- Practice mode flag
+
     if question_index >= len(questions):
         return redirect(url_for('quiz_finished', quiz_name=quiz_name))
+
     current_question = questions[question_index]
-    progress = QuizProgress.query.filter_by(user_id=current_user.id, quiz_name=quiz_name).first()
-    if not progress or progress.completed:
-        flash('Dieses Quiz ist bereits abgeschlossen.', 'info')
+
+    # Load progress
+    progress = QuizProgress.query.filter_by(
+        user_id=current_user.id, 
+        quiz_name=quiz_name
+    ).first()
+
+    if not progress:
+        flash('Quiz konnte nicht geladen werden.', 'danger')
         return redirect(url_for('dashboard'))
 
+    if progress.completed and not practice_mode:
+        flash('Dieses Quiz ist bereits abgeschlossen.', 'info')
+        return redirect(url_for('quiz_finished', quiz_name=quiz_name))
+
     if request.method == 'POST':
+
         user_answer = request.form.get('answer', '').strip()
         correct_answer = current_question.get('answer')
         is_correct = user_answer.lower() == correct_answer.lower()
 
         if 'quiz_answers' not in session:
             session['quiz_answers'] = []
+
         session['quiz_answers'].append({
             'question': current_question.get('text'),
             'user_answer': user_answer,
@@ -289,24 +414,46 @@ def show_question(quiz_name, question_index):
 
         if is_correct:
             flash('Richtig!', 'success')
-            current_user.exp += EXP_PER_QUESTION
-            progress.exp_earned += EXP_PER_QUESTION
-            db.session.commit()
+
+            # XP ONLY IN REAL MODE
+            if not practice_mode:
+                current_user.exp += EXP_PER_QUESTION
+                progress.exp_earned += EXP_PER_QUESTION
+                db.session.commit()
+
         else:
             flash(f'Falsch. Die richtige Antwort war: {correct_answer}', 'danger')
 
         next_index = question_index + 1
         if next_index < len(questions):
-            return redirect(url_for('show_question', quiz_name=quiz_name, question_index=next_index))
+            return redirect(url_for(
+                'show_question',
+                quiz_name=quiz_name,
+                question_index=next_index,
+                practice=1 if practice_mode else None
+            ))
+
+
         else:
-            progress.completed = True
-            progress.results = json.dumps(session.get('quiz_answers', []))
-            db.session.commit()
+            if not practice_mode:
+                progress.completed = True
+                progress.results = json.dumps(session.get('quiz_answers', []))
+                db.session.commit()
+
             session.pop('quiz_answers', None)
+
             return redirect(url_for('quiz_finished', quiz_name=quiz_name))
 
-    return render_template('quiz.html', quiz_name=quiz_name, question=current_question, 
-                           question_index=question_index, total_questions=len(questions))
+    # Render question
+    return render_template(
+        'quiz.html',
+        quiz_name=quiz_name,
+        question=current_question,
+        question_index=question_index,
+        total_questions=len(questions),
+        max_xp=len(questions) * EXP_PER_QUESTION
+    )
+
 
 
 @app.route('/quiz/finished/<quiz_name>')
@@ -323,6 +470,32 @@ def quiz_finished(quiz_name):
                            quiz_title=quiz_data.get("title"),
                            exp_earned=progress.exp_earned,
                            results=results)
+@app.route('/change_student_group', methods=['POST'])
+@login_required
+def change_student_group():
+    if current_user.role != 'teacher':
+        abort(403)
+
+    student_id = request.form.get('student_id')
+    new_group_id = request.form.get('new_group_id')
+
+    student = User.query.filter_by(id=student_id, teacher_id=current_user.id).first()
+    group = Group.query.filter_by(id=new_group_id, teacher_id=current_user.id).first()
+
+    if not student:
+        flash("Ungültiger Schüler.", "danger")
+        return redirect(url_for('dashboard'))
+
+    if not group:
+        flash("Ungültige Gruppe.", "danger")
+        return redirect(url_for('dashboard'))
+
+    student.group_id = new_group_id
+    db.session.commit()
+
+    flash(f'Schüler \"{student.username}\" wurde in die Gruppe \"{group.name}\" verschoben.', "success")
+    return redirect(url_for('dashboard'))
+
 
 
 # --- App-Start & DB-Erstellung ---
