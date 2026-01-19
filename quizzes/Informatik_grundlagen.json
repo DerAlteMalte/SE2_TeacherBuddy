@@ -4,34 +4,54 @@
     {
       "id": 1,
       "type": "fill-in-the-blank",
-      "text": "Die zentrale Recheneinheit eines Computers heißt ________________.",
+      "text": "Die zentrale Recheneinheit eines Computers wird bezeichnet als: ________________.",
       "answer": "CPU"
     },
     {
       "id": 2,
       "type": "multiple-choice",
-      "text": "Welche dieser Komponenten ist ein Eingabegerät?",
+      "text": "Welche dieser Komponenten dient hauptsächlich der Eingabe von Daten?",
       "options": ["Monitor", "Maus", "Drucker", "Lautsprecher"],
       "answer": "Maus"
     },
     {
       "id": 3,
       "type": "fill-in-the-blank",
-      "text": "Das Binärsystem besteht nur aus den Zahlen ____ und ____.",
+      "text": "Das Binärsystem ist ein Zahlensystem zur Darstellung von Daten und besteht aus den Ziffern _________.",
       "answer": "0 und 1"
     },
     {
       "id": 4,
       "type": "multiple-choice",
-      "text": "Wie viele Bit hat ein Byte?",
+      "text": "Welche Einheit wird typischerweise zur Angabe der Speichergröße einer Datei verwendet?",
+      "options": ["Hertz", "Byte", "Volt", "Pixel"],
+      "answer": "Byte"
+    },
+    {
+      "id": 5,
+      "type": "multiple-choice",
+      "text": "Wie viele Bit sind zu einem Byte zusammengefasst?",
       "options": ["4", "8", "10", "16"],
       "answer": "8"
     },
     {
-      "id": 5,
+      "id": 6,
       "type": "fill-in-the-blank",
-      "text": "Der Begriff „Software“ bezeichnet ________________, während „Hardware“ die physischen Komponenten meint.",
+      "text": "Während man unter „Hardware“ die physischen Bauteile versteht, versteht man unter „Software“ ________________.",
       "answer": "Programme"
-    }
+    },
+    {
+      "id": 7,
+      "type": "multiple-choice",
+      "text": "Welches der folgenden Geräte zählt zu den Ausgabegeräten?",
+      "options": ["Tastatur", "Scanner", "Monitor", "Mikrofon"],
+      "answer": "Monitor"
+    },
+    {
+    "id": 8,
+    "type": "fill-in-the-blank",
+    "text": "Die Sprache, die Computer verstehen, nennt man ____",
+    "answer": "Maschinensprache"
+  }
   ]
 }
