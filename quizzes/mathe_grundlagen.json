@@ -1,5 +1,5 @@
 {
-  "title": "Mathematik Grundlagen",
+  "title": "Mathematik Grundlagen - 1",
   "questions": [
     {
       "id": 1,
@@ -25,32 +25,6 @@
       "text": "Welche Zahl ist größer als 50, aber kleiner als 60?",
       "options": ["45", "55", "65", "50"],
       "answer": "55"
-    },
-    {
-      "id": 5,
-      "type": "fill-in-the-blank",
-      "text": "Wenn ein Rechteck die Seitenlängen 8 cm und 2 cm hat, beträgt der Umfang ____ cm.",
-      "answer": "20"
-    },
-    {
-      "id": 6,
-      "type": "multiple-choice",
-      "text": "Welche Zahl ist eine Primzahl?",
-      "options": ["21", "17", "15", "27"],
-      "answer": "17"
-    },
-    {
-      "id": 7,
-      "type": "fill-in-the-blank",
-      "text": "Ein Drittel von 12 ist ____.",
-      "answer": "4"
-    },
-    {
-      "id": 8,
-      "type": "multiple-choice",
-      "text": "Wie viele Grad hat ein rechter Winkel?",
-      "options": ["45°", "90°", "60°", "180°"],
-      "answer": "90°"
     }
   ]
 }

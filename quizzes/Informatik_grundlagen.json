@@ -1,5 +1,5 @@
 {
-  "title": "Informatik Grundlagen",
+  "title": "Informatik Grundlagen - 1",
   "questions": [
     {
       "id": 1,
@@ -26,32 +26,6 @@
       "text": "Welche Einheit wird typischerweise zur Angabe der Speichergröße einer Datei verwendet?",
       "options": ["Hertz", "Byte", "Volt", "Pixel"],
       "answer": "Byte"
-    },
-    {
-      "id": 5,
-      "type": "multiple-choice",
-      "text": "Wie viele Bit sind zu einem Byte zusammengefasst?",
-      "options": ["4", "8", "10", "16"],
-      "answer": "8"
-    },
-    {
-      "id": 6,
-      "type": "fill-in-the-blank",
-      "text": "Während man unter „Hardware“ die physischen Bauteile versteht, versteht man unter „Software“ ________________.",
-      "answer": "Programme"
-    },
-    {
-      "id": 7,
-      "type": "multiple-choice",
-      "text": "Welches der folgenden Geräte zählt zu den Ausgabegeräten?",
-      "options": ["Tastatur", "Scanner", "Monitor", "Mikrofon"],
-      "answer": "Monitor"
-    },
-    {
-    "id": 8,
-    "type": "fill-in-the-blank",
-    "text": "Die Sprache, die Computer verstehen, nennt man ____",
-    "answer": "Maschinensprache"
-  }
+    }
   ]
 }
